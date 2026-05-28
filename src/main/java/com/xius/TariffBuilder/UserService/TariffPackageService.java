@@ -25,81 +25,60 @@ public class TariffPackageService {
 				SELECT
 				    a.tariff_package_id,
 				    a.tariff_package_desc,
-				    b.activation_fee,
+				    MIN(c.charge_id) AS charge_id,
+				    MIN((SELECT g.activation_fee
+				         FROM cs_rat_periodic_charge_info g
+				         WHERE g.charge_id = c.charge_id)) AS activation_fee,
+				    MIN(DECODE((SELECT g.rental_type
+				                FROM cs_rat_periodic_charge_info g
+				                WHERE g.charge_id = c.charge_id),
+				        'M', 'Monthly', 'O', 'Others', 'D', 'Daily',
+				        'W', 'Weekly',  'F', 'Fixed',  'U', 'Unlimited',
+				        'Y', 'Yearly')) AS rental_type,
+				    MAX((SELECT g.rental_period
+				         FROM cs_rat_periodic_charge_info g
+				         WHERE g.charge_id = c.charge_id)) AS rental_period,
 
-				    DECODE(
-				        rental_type,
-				        'M', 'Monthly',
-				        'O', 'Others',
-				        'D', 'Daily',
-				        'W', 'Weekly',
-				        'F', 'Fixed',
-				        'U', 'Unlimited',
-				        'Y', 'Yearly'
-				    ) rental_type,
+				    MAX(CASE WHEN f.balance_category = 'DATA' THEN
+				        CASE WHEN f.total_bucket > 99999 THEN 'UNLIMITED'
+				             ELSE fn_data_unit_converter(f.total_bucket)
+				        END
+				    END) AS data_benefit,
 
-				    rental_period,
+				    MAX(CASE WHEN f.balance_category = 'SMS' THEN
+				        CASE WHEN f.total_bucket > 99999 THEN 'UNLIMITED'
+				             ELSE f.total_bucket || ' SMS'
+				        END
+				    END) AS sms_benefit,
 
-				    f.balance_category,
+				    MAX(CASE WHEN f.balance_category = 'VOICE' THEN
+				        CASE WHEN f.total_bucket > 99999 THEN 'UNLIMITED'
+				             ELSE f.total_bucket || ' Sec'
+				        END
+				    END) AS voice_benefit
 
-				    CASE
-				        WHEN f.balance_category = 'DATA'
-				        THEN CASE
-				                WHEN SUM(f.bucket_unit_value) > 99999
-				                THEN 'UNLIMITED'
-				                ELSE fn_data_unit_converter(
-				                        SUM(f.bucket_unit_value)
-				                     )
-				             END
+				FROM cs_rat_tariff_package a
+				JOIN cs_rat_tariff_service_pack_map c ON a.tariff_package_id = c.tariff_package_id
+				JOIN cs_atp_accumu_bon_disc_map     d ON c.service_package_id = d.atp_id
+				JOIN cs_bndl_mt_bndl_bucket_map     e ON d.bundle_or_discount_id = e.bundle_id
+				JOIN (
+				    SELECT
+				        e2.bundle_id,
+				        f2.balance_category,
+				        SUM(f2.bucket_unit_value) AS total_bucket
+				    FROM cs_bndl_mt_bndl_bucket_map e2
+				    JOIN bndl_mt_buckets f2 ON e2.bucket_id = f2.bucket_id
+				    GROUP BY e2.bundle_id, f2.balance_category
+				) f ON e.bundle_id = f.bundle_id
 
-				        WHEN f.balance_category = 'SMS'
-				        THEN CASE
-				                WHEN SUM(f.bucket_unit_value) > 99999
-				                THEN 'UNLIMITED'
-				                ELSE SUM(f.bucket_unit_value) || ' SMS'
-				             END
-
-				        WHEN f.balance_category = 'VOICE'
-				        THEN CASE
-				                WHEN SUM(f.bucket_unit_value) > 99999
-				                THEN 'UNLIMITED'
-				                ELSE SUM(f.bucket_unit_value) || ' Sec'
-				             END
-
-				        WHEN f.balance_category = 'GLOBAL'
-				        THEN CASE
-				                WHEN SUM(f.bucket_unit_value) > 99999
-				                THEN 'UNLIMITED'
-				                ELSE SUM(f.bucket_unit_value) || ' Amt'
-				             END
-				    END bucket_unit_value
-
-				FROM cs_rat_tariff_package a,
-				     cs_rat_periodic_charge_info b,
-				     cs_rat_tariff_service_pack_map c,
-				     cs_atp_accumu_bon_disc_map d,
-				     cs_bndl_mt_bndl_bucket_map e,
-				     bndl_mt_buckets f
-
-				WHERE a.charge_id = b.charge_id
-				AND a.tariff_package_id = c.tariff_package_id
-				AND c.service_package_id = d.atp_id
-				AND d.bundle_or_discount_id = e.bundle_id
-				AND e.bucket_id = f.bucket_id
-				AND a.network_id = ?
-				AND tariff_plan_type = 'DATP'
+				WHERE a.network_id = ?
 
 				GROUP BY
-				    b.charge_id,
-				    f.bucket_id,
 				    a.tariff_package_id,
-				    a.tariff_package_desc,
-				    b.activation_fee,
-				    rental_type,
-				    rental_period,
-				    f.balance_category
+				    a.tariff_package_desc
 
-				ORDER BY activation_fee DESC
+				ORDER BY
+				    a.tariff_package_id
 				""";
 
 		String rateGroupSql = """
@@ -145,11 +124,14 @@ public class TariffPackageService {
 					dto.setRentalPeriod(
 							rs.getLong("rental_period"));
 
-					dto.setBalanceCategory(
-							rs.getString("balance_category"));
+					dto.setDataBenefit(
+							rs.getString("data_benefit"));
 
-					dto.setBucketUnitValue(
-							rs.getString("bucket_unit_value"));
+					dto.setSmsBenefit(
+							rs.getString("sms_benefit"));
+
+					dto.setVoiceBenefit(
+							rs.getString("voice_benefit"));
 
 					dto.setRateGroupNames(
 							new ArrayList<>());

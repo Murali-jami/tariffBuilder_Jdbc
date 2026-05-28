@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
  
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+ 
 @Configuration
 public class DataSourceConfig {
  
@@ -28,6 +31,13 @@ public class DataSourceConfig {
             @Qualifier("oracleDataSource") DataSource ds){
  
         return new JdbcTemplate(ds);
+    }
+
+    @Primary
+    @Bean(name="transactionManager")
+    public PlatformTransactionManager transactionManager(
+            @Qualifier("oracleDataSource") DataSource ds) {
+        return new DataSourceTransactionManager(ds);
     }
  
  

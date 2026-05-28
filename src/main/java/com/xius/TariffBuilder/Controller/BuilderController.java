@@ -398,17 +398,34 @@ public class BuilderController {
     // ================= CLONE =================
 
     /*
+     * POST /clone/validate
+     * Validates tpName and publicityId before a modify-mode clone.
+     */
+    @ResponseBody
+    @PostMapping("/clone/validate")
+    public ResponseEntity<Map<String, Object>> validateClone(
+            @RequestBody Map<String, Object> requestBody) {
+
+        Long networkId = Long.valueOf(requestBody.get("networkId").toString());
+        String tpName = requestBody.get("tpName").toString();
+        String publicityId = requestBody.get("publicityId").toString();
+
+        logger.info("Clone validate request networkId={} tpName={} publicityId={}", networkId, tpName, publicityId);
+
+        Map<String, Object> result = tariffApprovalService.validateClone(networkId, tpName, publicityId);
+
+        return ResponseEntity.ok(result);
+    }
+
+    /*
      * POST /clone
-     * Triggered by the Clone button in the UI.
-     * Accepts the full request body from the caller, suffixes tpName and
-     * publicityId with "_CL" inside TariffApprovalService, then executes
-     * all tariff creation queries with the cloned values.
-     * Response includes clonedTpName, clonedPublicityId, clonedChargeId
-     * in addition to the standard tariff creation fields.
+     * Supports cloneMode=direct (add _CLn suffix) and cloneMode=modify
+     * (use overrideTpName / overridePublicityId supplied by the frontend).
+     * Always returns HTTP 200 with { status: "success"|"error", ... }.
      */
     @ResponseBody
     @PostMapping("/clone")
-    public ResponseEntity<?> clone(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<Map<String, Object>> clone(@RequestBody Map<String, Object> requestBody) {
 
         String tpName = requestBody.get("tpName").toString();
 
@@ -416,7 +433,7 @@ public class BuilderController {
 
         Map<String, Object> result = tariffApprovalService.clone(requestBody);
 
-        logger.info("Clone completed tpName={}", tpName);
+        logger.info("Clone completed tpName={} status={}", tpName, result.get("status"));
 
         return ResponseEntity.ok(result);
     }
@@ -425,22 +442,20 @@ public class BuilderController {
 
     @ResponseBody
     @PostMapping("/approve/{tpName}")
-    public Map<String, Object> approve(
+    public ResponseEntity<Map<String, Object>> approve(
             @PathVariable String tpName) {
 
-        return tariffApprovalService.approve(tpName);
+        Map<String, Object> result = tariffApprovalService.approve(tpName);
+        return ResponseEntity.ok(result);
     }
 
     @ResponseBody
     @PostMapping("/reject/{tpName}")
-    public Map<String, Object> reject(
+    public ResponseEntity<Map<String, Object>> reject(
             @PathVariable String tpName) {
 
-        tariffApprovalService.reject(tpName);
-
-        return Map.of(
-                "success", true,
-                "message", "Tariff rejected successfully");
+        Map<String, Object> result = tariffApprovalService.reject(tpName);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/saved/list")

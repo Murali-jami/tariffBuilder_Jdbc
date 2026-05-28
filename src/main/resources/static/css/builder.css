@@ -2762,11 +2762,11 @@ button:disabled {
     gap: 16px;
 }
 
-/* Multi-category row */
+/* Multi-category row — benefit chips need a little more breathing room */
 .tp-buckets-row--multi {
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 4px 10px;
+    gap: 6px 8px;
 }
 
 /* Thin vertical separator between buckets */
@@ -2814,6 +2814,33 @@ button:disabled {
     letter-spacing: 0.06em;
     line-height: 1.25;
 }
+/* ── Per-category benefit chip colours ── */
+.tp-meta-col--voice {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+.tp-meta-col--voice .tp-meta-val { color: #c2410c; }
+.tp-meta-col--voice .tp-meta-key { color: #ea580c; }
+
+.tp-meta-col--sms {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+.tp-meta-col--sms .tp-meta-val { color: #15803d; }
+.tp-meta-col--sms .tp-meta-key { color: #16a34a; }
+
+.tp-meta-col--data {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+.tp-meta-col--data .tp-meta-val { color: #1d4ed8; }
+.tp-meta-col--data .tp-meta-key { color: #2563eb; }
 
 /* ── Calls row (separate from price) ── */
 .tp-calls-row {

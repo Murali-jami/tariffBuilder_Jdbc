@@ -17,9 +17,11 @@ public class TariffPackageDetailsDto {
 
 	private Long rentalPeriod;
 
-	private String balanceCategory;
+	private String dataBenefit;
 
-	private String bucketUnitValue;
+	private String smsBenefit;
+
+	private String voiceBenefit;
 
 	private List<String> rateGroupNames;
 }

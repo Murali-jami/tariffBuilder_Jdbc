@@ -2056,43 +2056,44 @@ const _CAT_ICON = {
 };
 
 // ── Group flat plan array by tariffPackageDesc ────────────
+// New query returns one row per tariffPackageId with separate dataBenefit /
+// smsBenefit / voiceBenefit columns, so grouping is now a simple normalisation
+// pass that builds the same {buckets, rateGroupNames, _raw} shape the rest of
+// the rendering code expects.
 function _groupPlansByDesc(plans) {
     const map = new Map();
     plans.forEach(p => {
         const key = p.tariffPackageDesc || '';
         if (!map.has(key)) {
+            // Build ordered buckets from the three flat benefit columns
+            const buckets = [];
+            if (p.voiceBenefit) buckets.push({ balanceCategory: 'VOICE', bucketUnitValue: p.voiceBenefit });
+            if (p.smsBenefit)   buckets.push({ balanceCategory: 'SMS',   bucketUnitValue: p.smsBenefit });
+            if (p.dataBenefit)  buckets.push({ balanceCategory: 'DATA',  bucketUnitValue: p.dataBenefit });
+
             map.set(key, {
                 tariffPackageDesc: key,
+                tariff_package_id: p.tariff_package_id,
                 activationFee: p.activationFee,
                 rentalType: p.rentalType,
                 rentalPeriod: p.rentalPeriod,
-                buckets: [],          // { balanceCategory, bucketUnitValue }
-                rateGroupNames: [],   // deduplicated OTT service names
-                _raw: [],             // all original rows, for modal
+                buckets,
+                rateGroupNames: Array.isArray(p.rateGroupNames) ? [...p.rateGroupNames] : [],
+                _raw: [p],
             });
+        } else {
+            // Duplicate desc (shouldn't happen with the new query, but handle safely)
+            const group = map.get(key);
+            if (Number(p.activationFee) > Number(group.activationFee)) {
+                group.activationFee = p.activationFee;
+            }
+            if (Array.isArray(p.rateGroupNames)) {
+                p.rateGroupNames.forEach(function (name) {
+                    if (name && !group.rateGroupNames.includes(name)) group.rateGroupNames.push(name);
+                });
+            }
+            group._raw.push(p);
         }
-        const group = map.get(key);
-        // Keep the highest activationFee as the representative price
-        if (Number(p.activationFee) > Number(group.activationFee)) {
-            group.activationFee = p.activationFee;
-        }
-        group.buckets.push({ balanceCategory: p.balanceCategory, bucketUnitValue: p.bucketUnitValue });
-        // Merge rateGroupNames, deduplicating across rows of the same group
-        if (Array.isArray(p.rateGroupNames)) {
-            p.rateGroupNames.forEach(function (name) {
-                if (name && !group.rateGroupNames.includes(name)) group.rateGroupNames.push(name);
-            });
-        }
-        group._raw.push(p);
-    });
-
-    // Sort buckets within each group: VOICE → SMS → DATA → others
-    map.forEach(group => {
-        group.buckets.sort((a, b) => {
-            const ai = _CAT_ORDER.indexOf(a.balanceCategory);
-            const bi = _CAT_ORDER.indexOf(b.balanceCategory);
-            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-        });
     });
 
     return Array.from(map.values());
@@ -2110,25 +2111,28 @@ function _applyTpSearch(query) {
 
     const q = query.trim().toLowerCase();
 
-    // 1. Text search filter on the flat list
+    // 1. Text search filter — include benefit columns in search scope
     let flatFiltered = q
         ? _allTpPlans.filter(p => {
-            const fee = String(p.activationFee ?? '');
-            const cat = (p.balanceCategory || '').toLowerCase();
+            const fee  = String(p.activationFee ?? '');
             const desc = (p.tariffPackageDesc || '').toLowerCase();
-            return fee.includes(q) || cat.includes(q) || desc.includes(q);
+            const data = (p.dataBenefit  || '').toLowerCase();
+            const sms  = (p.smsBenefit   || '').toLowerCase();
+            const voice= (p.voiceBenefit || '').toLowerCase();
+            return fee.includes(q) || desc.includes(q) ||
+                   data.includes(q) || sms.includes(q) || voice.includes(q);
         })
         : _allTpPlans;
 
-    // 2. Category filter — keep only rows that have the selected balanceCategory
+    // 2. Category filter — check the flat benefit columns from the new query
     if (_tpFilter.category && _tpFilter.category !== 'ALL') {
         const cat = _tpFilter.category.toUpperCase();
-        // keep only groups that contain at least one row with this category
-        const matchingDescs = new Set(
-            flatFiltered.filter(p => (p.balanceCategory || '').toUpperCase() === cat)
-                .map(p => p.tariffPackageDesc)
-        );
-        flatFiltered = flatFiltered.filter(p => matchingDescs.has(p.tariffPackageDesc));
+        flatFiltered = flatFiltered.filter(p => {
+            if (cat === 'DATA')  return !!p.dataBenefit;
+            if (cat === 'SMS')   return !!p.smsBenefit;
+            if (cat === 'VOICE') return !!p.voiceBenefit;
+            return true;
+        });
     }
 
     // 3. Group
@@ -2167,15 +2171,16 @@ function _applyTpSearch(query) {
             <span class="tp-price-period">/m+GST</span>
         `;
 
-        // Build one column per bucket (VOICE | SMS | DATA …)
+        // Build benefit chips: one per non-null bucket (VOICE | SMS | DATA)
         const bucketsHtml = group.buckets.map(b => {
             const icon = _CAT_ICON[b.balanceCategory] || '📦';
-            const val = b.bucketUnitValue || '-';
-            const cat = b.balanceCategory || '';
+            const val  = b.bucketUnitValue || '-';
+            const cat  = b.balanceCategory || '';
+            const mod  = cat.toLowerCase(); // 'voice' | 'sms' | 'data'
             return `
-                <div class="tp-meta-col">
+                <div class="tp-meta-col tp-meta-col--${mod}">
                     <span class="tp-meta-val">${val}</span>
-                    <span class="tp-meta-key">${cat}</span>
+                    <span class="tp-meta-key">${icon} ${cat}</span>
                 </div>`;
         }).join('<div class="tp-meta-sep"></div>');
 
@@ -2212,7 +2217,7 @@ function _applyTpSearch(query) {
 
                 <button
                     class="tp-btn-select"
-                    onclick="event.stopPropagation();openCloneTree('${encodeURIComponent(group.tariffPackageDesc)}', ${group._raw[0]?.tariff_package_id || 'null'})"
+                    onclick="event.stopPropagation();openCloneTree('${encodeURIComponent(group.tariffPackageDesc)}', ${group.tariff_package_id || group._raw[0]?.tariff_package_id || 'null'})"
                 >
                     Select
                 </button>
