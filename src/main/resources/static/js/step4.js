@@ -172,7 +172,8 @@ function addToCenter(id, name) {
         midnightExpiry: "No",
         rental: "",
         maxCount: "",
-        freeCycles: "0"
+        freeCycles: "0",
+		priority:""
     };
 
     state.s4.push(item);
@@ -257,10 +258,48 @@ function renderCard(item) {
                        oninput="updateField('${item.id}','freeCycles',this.value)">
             </div>
         </div>
+		<div class="card-field">
+		     <label>PRIORITY</label>
+		     <input type="number"
+		          value="${item.priority || ''}"
+		          oninput="updateField('${item.id}', 'priority', this.value)">
+		</div>
     </div>
     `;
 
     container.appendChild(card);
+}
+
+function updateField(id, key, value) {
+ 
+    console.log(id, key, value);
+ 
+    const state = getState();
+    const item = state.s4.find(i => String(i.id) === String(id));
+ 
+    if (!item) return;
+ 
+    if (key === "priority" && value !== "") {
+        const existsInDATP = (state.s3 || []).some(i =>
+            String(i.priority || "").trim() === String(value).trim()
+        );
+ 
+        if (existsInDATP) {
+            alert(`Priority ${value} already selected in DATP.`);
+            item.priority = "";
+            saveState(state);
+ 
+            const input = document.querySelector(
+                `#card-s4-${id} input[oninput*="priority"]`
+            );
+            if (input) input.value = "";
+ 
+            return;
+        }
+    }
+ 
+    item[key] = value;
+    saveState(state);
 }
 
 // ---------- UPDATE ----------

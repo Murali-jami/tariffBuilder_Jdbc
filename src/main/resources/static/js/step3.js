@@ -174,7 +174,8 @@ function addToCenter(id, name) {
         midnightExpiry: "No",
         rental: "",
         maxCount: "",
-        freeCycles: "0"
+        freeCycles: "0",
+		priority:""
     };
 
     state.s3.push(item);
@@ -260,10 +261,43 @@ function renderCard(item) {
                         oninput="updateField('${item.id}', 'freeCycles', this.value)">
                 </div>
             </div>
+			<div class="card-field">
+			                   <label>PRIORITY</label>
+			                   <input type="number"
+			                       value="${item.priority || ''}"
+			                       oninput="updateField('${item.id}', 'priority', this.value)">
+			               </div>
         </div>
     `;
 
     container.appendChild(card);
+}
+
+function updateField(id, key, value) {
+   
+    console.log(id, key, value);
+ 
+    const state = getState();
+    const item = state.s3.find(i => String(i.id) === String(id));
+ 
+    // ADD THIS BLOCK
+    if (key === "priority" && value !== "") {
+ 
+        const existsInAATP = (state.s4 || []).some(i =>
+            String(i.priority || "") === String(value)
+        );
+ 
+        if (existsInAATP) {
+            alert(`Priority ${value} already selected in AATP.`);
+            return;
+        }
+    }
+ 
+    // EXISTING CODE
+    if (item) {
+        item[key] = value;
+        saveState(state);
+    }
 }
 
 // ---------- UPDATE ----------

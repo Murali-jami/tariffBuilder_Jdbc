@@ -1,4 +1,72 @@
 [ {
+  "name" : "MI MUNDO M_CL1",
+  "pkgType" : "POSTPAID",
+  "pkgSubType" : "COMMERCIAL",
+  "savedOn" : "08 Jun 2026",
+  "savedTime" : "12:54",
+  "username" : "USER1",
+  "selectedSvcs_s2" : "[\"VOICE\"]",
+  "selectedSvcs_s3" : "[\"VOICE\"]",
+  "selectedSvcs_s4" : "[]",
+  "state" : {
+    "s2" : [ {
+      "id" : "1743",
+      "name" : "MI MUNDO S_V",
+      "networkId" : "16"
+    } ],
+    "s3" : [ {
+      "id" : "1750",
+      "name" : "MI MUNDO M_VO",
+      "validity" : "M",
+      "rentalPeriod" : "",
+      "renewal" : "No",
+      "midnightExpiry" : "No",
+      "rental" : "",
+      "maxCount" : "",
+      "freeCycles" : "0",
+      "priority" : ""
+    } ],
+    "s4" : [ ],
+    "price" : "",
+    "publicityCode" : "",
+    "endDate" : "",
+    "isCorporate" : false
+  }
+}, {
+  "name" : "Untitled Draft",
+  "pkgType" : "POSTPAID",
+  "pkgSubType" : "NORMAL",
+  "savedOn" : "05 Jun 2026",
+  "savedTime" : "15:41",
+  "username" : "USER1",
+  "selectedSvcs_s2" : "[\"DATA\"]",
+  "selectedSvcs_s3" : "[\"VOICE\"]",
+  "selectedSvcs_s4" : null,
+  "state" : {
+    "s2" : [ {
+      "id" : "2013",
+      "name" : "MI MUNDO L_D2",
+      "networkId" : "16"
+    } ],
+    "s3" : [ {
+      "id" : "1973",
+      "name" : "xius_atp",
+      "validity" : "M",
+      "rentalPeriod" : "",
+      "renewal" : "No",
+      "midnightExpiry" : "No",
+      "rental" : "",
+      "maxCount" : "",
+      "freeCycles" : "0",
+      "priority" : ""
+    } ],
+    "s4" : [ ],
+    "price" : "",
+    "publicityCode" : "",
+    "endDate" : "",
+    "isCorporate" : false
+  }
+}, {
   "name" : "TP_11",
   "pkgType" : "PREPAID",
   "pkgSubType" : "GENERAL",
@@ -130,17 +198,6 @@
     "endDate" : "2026-05-31",
     "isCorporate" : false
   }
-}, {
-  "name" : "Untitled Draft",
-  "pkgType" : "POSTPAID",
-  "pkgSubType" : null,
-  "savedOn" : "26 May 2026",
-  "savedTime" : "13:17",
-  "username" : "USER1",
-  "selectedSvcs_s2" : null,
-  "selectedSvcs_s3" : null,
-  "selectedSvcs_s4" : null,
-  "state" : { }
 }, {
   "name" : "testing",
   "pkgType" : "POSTPAID",

@@ -452,10 +452,42 @@ public class BuilderController {
     @ResponseBody
     @PostMapping("/reject/{tpName}")
     public ResponseEntity<Map<String, Object>> reject(
-            @PathVariable String tpName) {
+            @PathVariable String tpName,
+            @RequestBody(required = false) Map<String, Object> body) {
 
-        Map<String, Object> result = tariffApprovalService.reject(tpName);
+        String remarks = (body != null && body.get("remarks") != null)
+                ? body.get("remarks").toString()
+                : "";
+        Map<String, Object> result = tariffApprovalService.reject(tpName, remarks);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/approved/list")
+    @ResponseBody
+    public Map<String, Object> getApprovedList() {
+        return jsonStorage.readApproved();
+    }
+
+    @GetMapping("/rejected/list")
+    @ResponseBody
+    public Map<String, Object> getRejectedList() {
+        return jsonStorage.readRejected();
+    }
+
+    @PostMapping("/rejected/delete/{tpName}")
+    @ResponseBody
+    public ResponseEntity<?> deleteRejected(
+            @PathVariable String tpName,
+            HttpSession session) {
+
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        jsonStorage.removeRejected(tpName);
+        logger.info("Rejected TP removed after re-submission tpName={} username={}", tpName, username);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/saved/list")

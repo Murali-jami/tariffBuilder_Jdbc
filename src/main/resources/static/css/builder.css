@@ -2814,6 +2814,7 @@ button:disabled {
     letter-spacing: 0.06em;
     line-height: 1.25;
 }
+
 /* ── Per-category benefit chip colours ── */
 .tp-meta-col--voice {
     background: #fff7ed;
@@ -2821,8 +2822,14 @@ button:disabled {
     border-radius: 8px;
     padding: 4px 10px;
 }
-.tp-meta-col--voice .tp-meta-val { color: #c2410c; }
-.tp-meta-col--voice .tp-meta-key { color: #ea580c; }
+
+.tp-meta-col--voice .tp-meta-val {
+    color: #c2410c;
+}
+
+.tp-meta-col--voice .tp-meta-key {
+    color: #ea580c;
+}
 
 .tp-meta-col--sms {
     background: #f0fdf4;
@@ -2830,8 +2837,14 @@ button:disabled {
     border-radius: 8px;
     padding: 4px 10px;
 }
-.tp-meta-col--sms .tp-meta-val { color: #15803d; }
-.tp-meta-col--sms .tp-meta-key { color: #16a34a; }
+
+.tp-meta-col--sms .tp-meta-val {
+    color: #15803d;
+}
+
+.tp-meta-col--sms .tp-meta-key {
+    color: #16a34a;
+}
 
 .tp-meta-col--data {
     background: #eff6ff;
@@ -2839,8 +2852,14 @@ button:disabled {
     border-radius: 8px;
     padding: 4px 10px;
 }
-.tp-meta-col--data .tp-meta-val { color: #1d4ed8; }
-.tp-meta-col--data .tp-meta-key { color: #2563eb; }
+
+.tp-meta-col--data .tp-meta-val {
+    color: #1d4ed8;
+}
+
+.tp-meta-col--data .tp-meta-key {
+    color: #2563eb;
+}
 
 /* ── Calls row (separate from price) ── */
 .tp-calls-row {
@@ -3802,4 +3821,29 @@ button:disabled {
 
 .ctm-modal .tp-modal-close:hover {
     background: rgba(255, 255, 255, 0.28);
+}
+
+/* ── Approved TPs overlay — benefit chips ─────────────────────── */
+.apv-chip {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+    letter-spacing: .3px;
+}
+
+.apv-chip--voice {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.apv-chip--sms {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.apv-chip--data {
+    background: #fef9c3;
+    color: #a16207;
 }

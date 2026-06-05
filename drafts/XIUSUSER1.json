@@ -1,0 +1,34 @@
+[ {
+  "name" : "test12345",
+  "pkgType" : "PREPAID",
+  "pkgSubType" : "NORMAL",
+  "savedOn" : "08 Jun 2026",
+  "savedTime" : "13:01",
+  "username" : "XIUSUSER1",
+  "selectedSvcs_s2" : "[\"VOICE\"]",
+  "selectedSvcs_s3" : "[\"VOICE\"]",
+  "selectedSvcs_s4" : "[]",
+  "state" : {
+    "s2" : [ {
+      "id" : 1743,
+      "name" : "MI MUNDO S_V"
+    } ],
+    "s3" : [ {
+      "id" : 1750,
+      "name" : "MI MUNDO M_VO",
+      "validity" : "M",
+      "rentalPeriod" : "",
+      "midnightExpiry" : "No",
+      "renewal" : "No",
+      "rental" : 0,
+      "maxCount" : 0,
+      "freeCycles" : "0",
+      "priority" : ""
+    } ],
+    "s4" : [ ],
+    "price" : "124",
+    "publicityCode" : "p9",
+    "endDate" : "2026-06-25",
+    "isCorporate" : false
+  }
+} ]

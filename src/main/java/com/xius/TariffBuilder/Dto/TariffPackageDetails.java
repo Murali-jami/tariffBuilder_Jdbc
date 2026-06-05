@@ -57,4 +57,5 @@ public class TariffPackageDetails {
     private String planExpMidnightYn;
     private Integer maxRenewalCount;
     private String createdBy;
+    private Integer priority;
 }

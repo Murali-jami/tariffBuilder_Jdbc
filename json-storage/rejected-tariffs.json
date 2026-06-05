@@ -1,0 +1,41 @@
+{
+  "test12345" : {
+    "tpName" : "test12345",
+    "username" : "USER1",
+    "networkId" : 16,
+    "data" : {
+      "username" : "USER1",
+      "isUpdate" : true,
+      "submittedOn" : "05 Jun 2026",
+      "packageType" : "PREPAID",
+      "tariffPackCategory" : "NORMAL",
+      "tariffPackageDesc" : "test12345",
+      "charge" : "124",
+      "endDate" : "06/25/2026",
+      "publicityId" : "p9",
+      "chargeId" : "test12345_PR",
+      "isCorporateYn" : false,
+      "tariffPlanId" : 1743,
+      "tariffPlanName" : "MI MUNDO S_V",
+      "selectedSvcs_s2" : "[\"VOICE\"]",
+      "selectedSvcs_s3" : "[\"VOICE\"]",
+      "selectedSvcs_s4" : "[]",
+      "defaultAtps" : [ {
+        "servicePackageId" : 1750,
+        "chargeId" : "test12345_PR",
+        "packageName" : "MI MUNDO M_VO",
+        "validity" : "M",
+        "rentalPeriod" : "",
+        "midnightExpiry" : "No",
+        "renewal" : "No",
+        "rental" : 0,
+        "maxCount" : 0,
+        "freeCycles" : "0",
+        "priority" : ""
+      } ],
+      "allowedAtps" : [ ]
+    },
+    "rejectedOn" : "2026-06-05T14:59:44.665654900",
+    "remarks" : "reject"
+  }
+}

@@ -256,6 +256,95 @@ public class JsonStorage {
 	}
 
 	/*
+	 * store approved tariff
+	 */
+	public void storeApproved(String tpName, Map<String, Object> tpData) {
+		storeToFile("json-storage/approved-tariffs.json", tpName, tpData);
+		logger.info("Stored to approved-tariffs.json tpName={}", tpName);
+	}
+
+	/*
+	 * store rejected tariff
+	 */
+	public void storeRejected(String tpName, Map<String, Object> tpData) {
+		storeToFile("json-storage/rejected-tariffs.json", tpName, tpData);
+		logger.info("Stored to rejected-tariffs.json tpName={}", tpName);
+	}
+
+	/*
+	 * generic helper: append a record to any JSON file
+	 */
+	private void storeToFile(String filePath, String tpName, Map<String, Object> tpData) {
+		try {
+			File file = new File(filePath);
+			file.getParentFile().mkdirs();
+
+			Map<String, Object> json = new LinkedHashMap<>();
+			if (file.exists() && file.length() > 0) {
+				json = mapper.readValue(file, new TypeReference<Map<String, Object>>() {
+				});
+			}
+
+			// Put new record at top
+			Map<String, Object> ordered = new LinkedHashMap<>();
+			ordered.put(tpName, tpData);
+			ordered.putAll(json);
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(file, ordered);
+		} catch (Exception e) {
+			logger.error("storeToFile error filePath={}", filePath, e);
+		}
+	}
+
+	/*
+	 * read approved tariffs
+	 */
+	public Map<String, Object> readApproved() {
+		return readFromFile("json-storage/approved-tariffs.json");
+	}
+
+	/*
+	 * remove tp from rejected tariffs
+	 */
+	public void removeRejected(String tpName) {
+		try {
+			String filePath = "json-storage/rejected-tariffs.json";
+			File file = new File(filePath);
+			if (!file.exists() || file.length() == 0) return;
+
+			Map<String, Object> json = mapper.readValue(file, new TypeReference<Map<String, Object>>() {});
+			json.remove(tpName);
+			mapper.writerWithDefaultPrettyPrinter().writeValue(file, json);
+			logger.info("Removed from rejected-tariffs.json tpName={}", tpName);
+		} catch (Exception e) {
+			logger.error("removeRejected error tpName={}", tpName, e);
+		}
+	}
+
+	/*
+	 * read rejected tariffs
+	 */
+	public Map<String, Object> readRejected() {
+		return readFromFile("json-storage/rejected-tariffs.json");
+	}
+
+	/*
+	 * generic helper: read any JSON file
+	 */
+	private Map<String, Object> readFromFile(String filePath) {
+		try {
+			File file = new File(filePath);
+			if (!file.exists() || file.length() == 0)
+				return new LinkedHashMap<>();
+			return mapper.readValue(file, new TypeReference<Map<String, Object>>() {
+			});
+		} catch (Exception e) {
+			logger.error("readFromFile error filePath={}", filePath, e);
+			return new LinkedHashMap<>();
+		}
+	}
+
+	/*
 	 * remove tp after approve/reject
 	 */
 	public void remove(

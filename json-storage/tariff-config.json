@@ -1,1 +1,39 @@
-{ }
+{
+  "modifyTest" : {
+    "tpName" : "modifyTest",
+    "username" : "XIUSUSER1",
+    "networkId" : 196,
+    "data" : {
+      "username" : "XIUSUSER1",
+      "isUpdate" : true,
+      "submittedOn" : "08 Jun 2026",
+      "packageType" : "POSTPAID",
+      "tariffPackCategory" : "NORMAL",
+      "tariffPackageDesc" : "modifyTest",
+      "charge" : "299",
+      "endDate" : "06/30/2026",
+      "publicityId" : "pub004",
+      "chargeId" : "modifyTest_PR",
+      "isCorporateYn" : false,
+      "tariffPlanId" : 103306,
+      "tariffPlanName" : "VOICE_PLAN",
+      "selectedSvcs_s2" : "[\"VOICE\"]",
+      "selectedSvcs_s3" : "[\"VOICE\"]",
+      "selectedSvcs_s4" : "[]",
+      "defaultAtps" : [ {
+        "servicePackageId" : 103360,
+        "chargeId" : "modifyTest_PR",
+        "packageName" : "Unlimited Voice Pack",
+        "validity" : "M",
+        "rentalPeriod" : "",
+        "midnightExpiry" : "No",
+        "renewal" : "No",
+        "rental" : 0,
+        "maxCount" : 0,
+        "freeCycles" : "0",
+        "priority" : "6"
+      } ],
+      "allowedAtps" : [ ]
+    }
+  }
+}

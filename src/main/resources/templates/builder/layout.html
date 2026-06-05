@@ -45,7 +45,6 @@
                 <span class="main-node-label">BUILDER</span>
             </a>
 
-            <div class="main-rail-divider"></div>
 
             <!-- Approver node — hidden until privilege allows -->
             <a href="/builder/admin" class="main-node" id="mn-approver" title="Tariff Approver"
@@ -54,7 +53,6 @@
                 <span class="main-node-label">APPROVER</span>
             </a>
 
-            <div class="main-rail-divider"></div>
 
             <a href="#" class="main-node" id="mn-clone" title="Clone TPs" onclick="openClone(); return false;">
                 <span class="main-node-icon material-icons">copy_all</span>
@@ -62,6 +60,20 @@
             </a>
 
             <div style="margin-top:auto;"></div>
+
+            <!-- Approved TPs node -->
+            <a href="#" class="main-node" id="mn-approved" title="Approved TPs"
+                th:classappend="${activeStep != 0} ? ' hidden'" onclick="openApproved(); return false;">
+                <span class="main-node-icon material-icons">check_circle</span>
+                <span class="main-node-label">APPROVED</span>
+            </a>
+
+            <!-- Rejected TPs node -->
+            <a href="#" class="main-node" id="mn-rejected" title="Rejected TPs"
+                th:classappend="${activeStep != 0} ? ' hidden'" onclick="openRejected(); return false;">
+                <span class="main-node-icon material-icons">cancel</span>
+                <span class="main-node-label">REJECTED</span>
+            </a>
 
             <a href="#" class="main-node" id="mn-saved" title="Drafts" th:classappend="${activeStep == 0} ? ' hidden'"
                 onclick="openSaved(); return false;">
@@ -250,10 +262,12 @@
             <div class="ctm-actions">
                 <button class="ctm-btn ctm-btn--cancel" onclick="_cloneTreeAction('cancel')">Cancel</button>
                 <button class="ctm-btn ctm-btn--modify" onclick="_cloneTreeAction('modify')">
-                    <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">edit</span>Modify
+                    <span class="material-icons"
+                        style="font-size:16px;vertical-align:middle;margin-right:4px;">edit</span>Modify
                 </button>
                 <button class="ctm-btn ctm-btn--clone" onclick="_cloneTreeAction('clone')">
-                    <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px;">file_copy</span>Clone
+                    <span class="material-icons"
+                        style="font-size:16px;vertical-align:middle;margin-right:4px;">file_copy</span>Clone
                 </button>
             </div>
 
@@ -312,6 +326,28 @@
             </button>
 
             <div id="tpModalContent"></div>
+        </div>
+    </div>
+
+    <!-- APPROVED TPs OVERLAY -->
+    <div id="approvedOverlay" class="draft-overlay">
+        <div class="draft-panel">
+            <div class="draft-header">
+                <span>Approved TPs</span>
+                <span class="material-icons close-btn" onclick="closeApproved()">close</span>
+            </div>
+            <div class="draft-content" id="approvedOverlayList"></div>
+        </div>
+    </div>
+
+    <!-- REJECTED TPs OVERLAY -->
+    <div id="rejectedOverlay" class="draft-overlay">
+        <div class="draft-panel">
+            <div class="draft-header">
+                <span>Rejected TPs</span>
+                <span class="material-icons close-btn" onclick="closeRejected()">close</span>
+            </div>
+            <div class="draft-content" id="rejectedOverlayList"></div>
         </div>
     </div>
 

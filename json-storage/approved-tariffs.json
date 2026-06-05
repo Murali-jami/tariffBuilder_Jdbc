@@ -1,0 +1,41 @@
+{
+  "test_05_26" : {
+    "tpName" : "test_05_26",
+    "username" : "USER1",
+    "networkId" : 16,
+    "data" : {
+      "username" : "USER1",
+      "isUpdate" : true,
+      "submittedOn" : "05 Jun 2026",
+      "packageType" : "POSTPAID",
+      "tariffPackCategory" : "NORMAL",
+      "tariffPackageDesc" : "test_05_26",
+      "charge" : "769",
+      "endDate" : "06/27/2026",
+      "publicityId" : "p987",
+      "chargeId" : "test_05_26_PR",
+      "isCorporateYn" : false,
+      "tariffPlanId" : 2049,
+      "tariffPlanName" : "MI MUNDO L_V3",
+      "selectedSvcs_s2" : "[\"VOICE\"]",
+      "selectedSvcs_s3" : "[\"VOICE\"]",
+      "selectedSvcs_s4" : "[]",
+      "defaultAtps" : [ {
+        "servicePackageId" : 1975,
+        "chargeId" : "test_05_26_PR1",
+        "packageName" : "xius_voice",
+        "validity" : "M",
+        "rentalPeriod" : "",
+        "midnightExpiry" : "No",
+        "renewal" : "No",
+        "rental" : 0,
+        "maxCount" : 0,
+        "freeCycles" : "0",
+        "priority" : "2"
+      } ],
+      "allowedAtps" : [ ]
+    },
+    "approvedOn" : "2026-06-05T15:23:01.195031500",
+    "tariffPackageId" : 1540
+  }
+}

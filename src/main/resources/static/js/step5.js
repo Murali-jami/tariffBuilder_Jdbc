@@ -69,15 +69,16 @@ async function saveConfiguration() {
 
     const username = USERNAME;
     const networkId = sessionStorage.getItem('networkId');
+    const isRejectedResubmit = !!sessionStorage.getItem('rejectedTpName');
 
     // CHANGE 7: no chargeId in ATP objects
     const payload = {
         username: username,
-        isUpdate: false,
+        isUpdate: isRejectedResubmit,   // skip duplicate JSON check when re-submitting a rejected TP
         submittedOn: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
         packageType: sessionStorage.getItem('pkgType') || '',
         tariffPackCategory: sessionStorage.getItem('pkgSubType') || 'NORMAL',
-        tariffPackageDesc: sessionStorage.getItem('tpName') || '',
+        tariffPackageDesc: sessionStorage.getItem('configName') || sessionStorage.getItem('tpName') || '',
         charge: state.price,
         endDate: formatDateToMMDDYYYY(state.endDate),
         publicityId: state.publicityCode,
@@ -128,10 +129,24 @@ async function saveConfiguration() {
             return;
         }
 
+        // If this was loaded from a rejected TP, remove it from rejected list
+        const rejectedTpName = sessionStorage.getItem('rejectedTpName');
+        const wasRejected = !!rejectedTpName;
+        if (rejectedTpName) {
+            await fetch('/rejected/delete/' + encodeURIComponent(rejectedTpName), { method: 'POST' })
+                .catch(err => console.warn('Could not remove from rejected list:', err));
+            sessionStorage.removeItem('rejectedTpName');
+        }
+
         alert('✅ Configuration saved successfully!\nPlan: ' + (result.tpName || ''));
         clearBuilderSession();
-        window.isInternalNavigation = true;
-        window.location.href = '/builder/step1';
+        closeCloneTree();
+        if (wasRejected) {
+            window.isInternalNavigation = true;
+            window.location.href = '/builder/step1?openSaved=1';
+        } else {
+            openClone();
+        }
 
     } catch (err) {
         console.error('Save config error:', err);
@@ -164,7 +179,7 @@ async function clonePackageFromBuilder() {
 
     const originalTpName    = sessionStorage.getItem('cloneTpName');
     const networkId         = sessionStorage.getItem('cloneNetworkId');
-    const username          = sessionStorage.getItem('cloneUsername');
+    const username          = sessionStorage.getItem('username') || (typeof USERNAME !== 'undefined' ? USERNAME : '');
     const cloneType         = sessionStorage.getItem('cloneType') || 'direct';
     const origPublicityId   = sessionStorage.getItem('cloneOriginalPublicityId');
     const origTpName        = sessionStorage.getItem('cloneOriginalTpName');
@@ -244,7 +259,7 @@ async function clonePackageFromBuilder() {
         const payload = {
             tpName:    originalTpName,
             networkId: Number(networkId),
-            username:  username || USERNAME,
+            username:  username,
             data:      dataPayload
         };
 
@@ -276,7 +291,6 @@ async function clonePackageFromBuilder() {
         sessionStorage.removeItem('cloneType');
         sessionStorage.removeItem('cloneTpName');
         sessionStorage.removeItem('cloneNetworkId');
-        sessionStorage.removeItem('cloneUsername');
         sessionStorage.removeItem('cloneOriginalPublicityId');
         sessionStorage.removeItem('cloneOriginalTpName');
         clearBuilderSession();
