@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,6 +39,7 @@ import com.xius.TariffBuilder.UserService.TariffPackageService;
 import com.xius.TariffBuilder.UserService.TariffService;
 import com.xius.TariffBuilder.UserService.UserLoginService;
 import com.xius.TariffBuilder.util.JsonStorage;
+import com.xius.TariffBuilder.UserService.TariffUpdateService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -75,6 +77,9 @@ public class BuilderController {
 
     @Autowired
     private TariffPackageService tariffPackageService;
+
+    @Autowired
+    private TariffUpdateService tariffUpdateService;
 
     // ================= LOGIN =================
 
@@ -603,6 +608,18 @@ public class BuilderController {
     @GetMapping("/details")
     public ResponseEntity<?> getTariffPackageDetails(@RequestParam Long networkId, @RequestParam Long tariffPackageId) {
 
-        return ResponseEntity.ok(tariffApprovalService.getTariffPackageDetails(tariffPackageId, networkId));
+        return ResponseEntity.ok(tariffUpdateService.getTariffPackageDetails(tariffPackageId, networkId));
     }
+
+    @ResponseBody
+@PutMapping("/update/{tariffPackageId}")
+public ResponseEntity<Map<String, Object>> updateTariffPackage(
+        @PathVariable Long tariffPackageId,
+        @RequestParam Long networkId,
+        @RequestBody Map<String, Object> requestBody) {
+ 
+    Map<String, Object> result = tariffUpdateService.updateTariffPackage(
+            tariffPackageId, networkId, requestBody);
+    return ResponseEntity.ok(result);
+}
 }

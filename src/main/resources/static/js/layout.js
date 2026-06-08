@@ -1080,7 +1080,7 @@ function loadHierarchy(tpName) {
                     <div class="comp-name">${item.packageName}</div>
                     <div class="comp-details">
                         <span class="pill"><strong>Validity:</strong> ${validityLabel(item.validity)}</span>
-                        ${item.validity === 'O' && item.validityDays ? `<span class="pill"><strong>Validity Days:</strong> ${item.validityDays}</span>` : ''}
+                        ${item.validity === 'O' && item.rentalPeriod != null ? `<span class="pill"><strong>Rental Period:</strong> ${item.rentalPeriod} Days</span>` : ''}
                         <span class="pill"><strong>Midnight Expiry:</strong> ${item.midnightExpiry || '—'}</span>
                         <span class="pill"><strong>Renewal:</strong> ${item.renewal || '—'}</span>
                         <span class="pill"><strong>Rental:</strong> ${item.rental || '0'}</span>
@@ -1550,24 +1550,17 @@ function loadApproved() {
 
             window.ALL_APPROVED = plans;
 
-            container.innerHTML = plans.map((p, i) => {
-                const isOthers = (p.rentalType || '').toLowerCase() === 'others';
-                const meta = isOthers
-                    ? (p.rentalPeriod != null ? p.rentalPeriod + ' days' : 'Others')
-                    : (p.rentalType || '');
-                const fee = Number(p.activationFee || 0).toLocaleString('en-IN');
-                return `
+            container.innerHTML = plans.map((p, i) => `
                 <div class="draft-item saved" style="--i:${i}">
                     <div class="draft-info" onclick="loadApprovedPackage(${i})" style="cursor:pointer;">
                         <span class="material-icons draft-icon" style="color:#22c55e;">check_circle</span>
                         <div class="draft-text">
                             <span class="draft-name">${p.tariffPackageDesc}</span>
-                            <span class="draft-meta">${meta}</span>
+                            <span class="draft-meta">${p.rentalType || ''} · ${p.rentalPeriod != null ? p.rentalPeriod + ' days' : ''}</span>
                         </div>
                     </div>
-                    <span class="draft-delete" style="cursor:default;font-style:normal;font-size:13px;font-weight:600;color:var(--text-muted,#888);">₹${fee}</span>
-                </div>`;
-            }).join('');
+                </div>
+            `).join('');
         })
         .catch(() => {
             container.innerHTML = '<p class="sidebar-text">Error loading approved TPs</p>';
@@ -1598,6 +1591,7 @@ async function loadApprovedPackage(index) {
             s3: (d.defaultAtps || []).map(a => ({
                 id: a.servicePackageId,
                 name: a.packageName,
+                chargeId: a.chargeId || '',
                 validity: a.validity,
                 rentalPeriod: a.rentalPeriod || '',
                 midnightExpiry: a.midnightExpiry,
@@ -1609,6 +1603,7 @@ async function loadApprovedPackage(index) {
             s4: (d.allowedAtps || []).map(a => ({
                 id: a.servicePackageId,
                 name: a.packageName,
+                chargeId: a.chargeId || '',
                 validity: a.validity,
                 rentalPeriod: a.rentalPeriod || '',
                 midnightExpiry: a.midnightExpiry,
@@ -1688,6 +1683,7 @@ function loadRejected() {
             if (!items.length) {
                 container.innerHTML = `
                     <div class="drafts-empty">
+                        <span class="material-icons">cancel</span>
                         <p class="drafts-empty-title">No rejected TPs</p>
                     </div>`;
                 return;
@@ -1698,6 +1694,7 @@ function loadRejected() {
             container.innerHTML = items.map((c, i) => `
                 <div class="draft-item saved" style="--i:${i}">
                     <div class="draft-info" onclick="loadRejectedPackage(${i})" style="cursor:pointer;">
+                        <span class="material-icons draft-icon" style="color:#ef4444;">cancel</span>
                         <div class="draft-text">
                             <span class="draft-name">${c.tpName}</span>
                             <span class="draft-meta">${c.username || ''} · ${c.rejectedOn ? c.rejectedOn.substring(0, 10) : ''}</span>

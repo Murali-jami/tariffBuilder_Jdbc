@@ -1,4 +1,29 @@
 {
+  "test_08_26" : {
+    "tpName" : "test_08_26",
+    "username" : "USER1",
+    "networkId" : 16,
+    "data" : {
+      "username" : "USER1",
+      "isUpdate" : false,
+      "submittedOn" : "08 Jun 2026",
+      "packageType" : "PREPAID",
+      "tariffPackCategory" : "NORMAL",
+      "tariffPackageDesc" : "test_08_26",
+      "charge" : "333",
+      "endDate" : "06/18/2026",
+      "publicityId" : "p_test100",
+      "chargeId" : "test_08_26_PR",
+      "isCorporateYn" : false,
+      "tariffPlanId" : 2050,
+      "tariffPlanName" : "MI MUNDO L_V4",
+      "selectedSvcs_s2" : "[\"VOICE\"]",
+      "selectedSvcs_s3" : "[]",
+      "selectedSvcs_s4" : "[]",
+      "defaultAtps" : [ ],
+      "allowedAtps" : [ ]
+    }
+  },
   "modifyTest" : {
     "tpName" : "modifyTest",
     "username" : "XIUSUSER1",
